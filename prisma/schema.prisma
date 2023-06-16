@@ -11,13 +11,13 @@ datasource db {
 }
 
 model User {
-  id               Int       @id
+  id               Int       @id @default(autoincrement())
   username         String    @unique
   password         String
-  desctiption      String
-  likedBy          User[]    @relation("UserLikes")
+  desctiption      String?
+  likedBy          User[]   @relation("UserLikes")
   likes            User[]    @relation("UserLikes")
-  avatar           String
+  avatar           String?
   gallery          Gallery?
   messagesSent     Message[] @relation("sendsMessage")
   messagesReceived Message[] @relation("receivesMessage")
