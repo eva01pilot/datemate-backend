@@ -15,16 +15,33 @@ model User {
   username         String    @unique
   password         String
   desctiption      String?
-  likedBy          User[]   @relation("UserLikes")
-  likes            User[]    @relation("UserLikes")
-  avatar           String?
-  gallery          Gallery?
+  likesSent        Like[]    @relation("UserLikes")
+  likesReceived    Like[]    @relation("UserLikedBy")
   messagesSent     Message[] @relation("sendsMessage")
   messagesReceived Message[] @relation("receivesMessage")
+  avatar           String?
+  gallery          Gallery?
+}
+
+model Like {
+  id        Int      @id @default(autoincrement())
+  likedBy   User     @relation(name: "UserLikedBy", fields: [likedById], references: [id])
+  likedById Int
+  liked     User     @relation(name: "UserLikes", fields: [likedId], references: [id])
+  likedId   Int
+  datetime  DateTime
+}
+
+model Match {
+  firstPersonId  Int
+  secondPersonId Int
+  datetime       DateTime
+
+  @@id([firstPersonId, secondPersonId])
 }
 
 model Message {
-  id          Int          @id
+  id          Int          @id @default(autoincrement())
   sender      User         @relation(name: "sendsMessage", fields: [senderId], references: [id])
   senderId    Int
   receiver    User         @relation(name: "receivesMessage", fields: [receiverId], references: [id])
@@ -34,7 +51,7 @@ model Message {
 }
 
 model Attachment {
-  id        Int     @id
+  id        Int     @id @default(autoincrement())
   mimeType  String
   url       String
   message   Message @relation(fields: [messageId], references: [id])
@@ -42,7 +59,7 @@ model Attachment {
 }
 
 model Gallery {
-  id     Int  @id
+  id     Int  @id @default(autoincrement())
   user   User @relation(fields: [userId], references: [id])
   userId Int  @unique
 }

@@ -1,14 +1,32 @@
-import authController from "./src/controllers/auth-controller.js";
-import http from 'http'
+import cors from 'cors'
 import express from 'express'
+
+import isAuthenticated from "./src/middleware/auth.js";
+import authController from "./src/controllers/auth-controller.js";
+import dateController from "./src/controllers/date-controller.js";
+import { cookieValidation, makeGetEndpoint, makePostEndpoint } from "./src/helpers/validation.js";
+import { cookieSchema, loginSchema, signupSchema } from "./src/validation-schemas/auth-validation.js";
+import { getUserSchema, likeUserSchema } from "./src/validation-schemas/date-validation.js";
+
 const PORT = 3000
 
 const app = express()
+
+app.use(cors({
+  origin: ['http://localhost:3001', 'http://localhost:3000']
+}));
 
 app.listen(PORT, () => {
   console.log(`Listening on ${PORT}`)
 })
 
-app.post('/user/me', authController.verifyLogin)
-app.post('/user/login', authController.login)
-app.post('/user/signup', authController.signUp)
+app.post('/api/user/me', cookieValidation(authController.verifyLogin, cookieSchema))
+
+app.post('/api/user/login', makePostEndpoint(authController.login, loginSchema))
+app.post('/api/user/signup', makePostEndpoint( authController.signUp, signupSchema))
+
+app.get('/api/dates/:id', isAuthenticated, makeGetEndpoint(dateController.getUser, getUserSchema))
+app.get('/api/dates', isAuthenticated, makeGetEndpoint(dateController.getDates))
+app.get('/api/dates/matches', isAuthenticated, makeGetEndpoint(dateController.getMatches))
+app.get('/api/dates/like', isAuthenticated, makeGetEndpoint(dateController.getLikes))
+app.post('/api/dates/like', isAuthenticated, makePostEndpoint(dateController.likePerson, likeUserSchema))
