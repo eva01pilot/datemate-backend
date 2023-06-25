@@ -18,8 +18,8 @@ export const makeGetEndpoint = (cb: (req: Request, res: Response) => void, schem
 export const makePostEndpoint = (cb: (req: Request, res: Response) => void, schema?: z.Schema) =>
   (req: Request, res: Response) => {
     if (schema) {
+      console.log(req.path)
       const paramsResult = schema.safeParse(req.body)
-
       if (!paramsResult.success) {
         return res.status(400).json({
           error: 'validation-failed',

@@ -5,6 +5,11 @@ class Crypt {
     const hashed = await bcrypt.hash(password, await bcrypt.genSalt(Crypt.SALT_ROUNDS))
     return hashed
   }
+  async compare(password: string, hash: string) {
+    const isValid = await bcrypt.compare(password, hash)
+    
+    return isValid
+  }
 }
 
 const crypt = new Crypt()

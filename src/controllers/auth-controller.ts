@@ -8,8 +8,7 @@ export class AuthController {
   async login(req: Request, res: Response) {
 
     const { username, password }: { username: string, password: string } = req.body
-    const passwordHashed = await crypt.hash(password)
-
+    
     const user = await prisma.user.findFirst({
       where: {
         username: {
@@ -17,19 +16,28 @@ export class AuthController {
         }
       },
       select: {
+        id: true,
         username: true,
         password: true,
         avatar: true,
       }
     })
-
-    if (!user || !(user.password === passwordHashed)) {
+    if(!user) {
       return res.status(401).json({
         err: 'login-failed',
         errMessage: 'Неправильный логин или пароль',
       })
     }
-
+    const isValid = await crypt.compare(password, user?.password)
+    if (!isValid) {
+      return res.status(401).json({
+        err: 'login-failed',
+        errMessage: 'Неправильный логин или пароль',
+      })
+    }
+    res.cookie('access_token', jsonWebToken.sign(user.id), {
+      httpOnly: true
+    })
     return res.status(200).json({
       data: {
         user: {
@@ -72,6 +80,19 @@ export class AuthController {
     const { username, password }: { username: string, password: string } = req.body
     const passwordHashed = await crypt.hash(password)
 
+    const existingUser = await prisma.user.findFirst({
+      where: {
+        username: username
+      }
+    })
+
+    if(existingUser) {
+      return res.status(400).json({
+        error: 'signup-error',
+        errMessage: 'Имя пользователя уже существует'
+      })
+    }
+
     const user = await prisma.user.create({
       data: {
         username,
@@ -83,7 +104,9 @@ export class AuthController {
       }
     });
 
-    res.cookie('access_token', jsonWebToken.sign(user.id))
+    res.cookie('access_token', jsonWebToken.sign(user.id), {
+      httpOnly: true
+    })
     return res.status(200).json({
       data: {
         user,
