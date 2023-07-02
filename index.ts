@@ -4,11 +4,14 @@ import express from 'express'
 import isAuthenticated from "./src/middleware/auth.js";
 import authController from "./src/controllers/auth-controller.js";
 import dateController from "./src/controllers/date-controller.js";
+import interestController from './src/controllers/interest-controller.js';
 import { cookieValidation, makeGetEndpoint, makePostEndpoint } from "./src/helpers/validation.js";
 import { cookieSchema, loginSchema, signupSchema } from "./src/validation-schemas/auth-validation.js";
 import { getUserSchema, likeUserSchema } from "./src/validation-schemas/date-validation.js";
 import bodyParser from 'body-parser';
 import cookieParser from "cookie-parser";
+import userController from './src/controllers/user-controller.js';
+import { updateUserSchema } from './src/validation-schemas/user-validation.js';
 
 const PORT = 3001
 
@@ -27,7 +30,7 @@ app.listen(PORT, () => {
   console.log(`Listening on ${PORT}`)
 })
 
-app.post('/api/user/me', cookieValidation(authController.verifyLogin, cookieSchema))
+app.post('/api/user/me', cookieValidation(userController.getMe, cookieSchema))
 
 app.post('/api/user/login', makePostEndpoint(authController.login, loginSchema))
 app.post('/api/user/signup', makePostEndpoint( authController.signUp, signupSchema))
@@ -37,3 +40,6 @@ app.get('/api/dates', isAuthenticated, makeGetEndpoint(dateController.getDates))
 app.get('/api/dates/matches', isAuthenticated, makeGetEndpoint(dateController.getMatches))
 app.get('/api/dates/like', isAuthenticated, makeGetEndpoint(dateController.getLikes))
 app.post('/api/dates/like', isAuthenticated, makePostEndpoint(dateController.likePerson, likeUserSchema))
+
+app.post('/api/user/update', isAuthenticated, makePostEndpoint(userController.update, updateUserSchema))
+app.get('/api/interests', isAuthenticated, makeGetEndpoint(interestController.getAllInterests))

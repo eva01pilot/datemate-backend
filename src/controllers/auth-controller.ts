@@ -47,34 +47,7 @@ export class AuthController {
       }
     })
   }
-  async verifyLogin(req: Request, res: Response) {
-    const access_token: string = req.cookies['access_token']
-    const userID = jsonWebToken.verify(access_token)
-    if (userID === false) {
-      return res.status(401).json({
-        error: 'login-check-failed',
-        errMessage: 'Authorization failed'
-      })
-    }
-    const user = await prisma.user.findFirst({
-      where: {
-        id: +userID
-      },
-      select: {
-        id: true,
-        username: true,
-        avatar: true,
-        desctiption: true,
-        gallery: true,
-      }
-    });
-    return res.status(200).json({
-      data: {
-        user
-      }
-    })
 
-  }
 
   async signUp(req: Request, res: Response) {
     const { username, password }: { username: string, password: string } = req.body

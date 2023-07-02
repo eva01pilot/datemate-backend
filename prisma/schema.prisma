@@ -11,16 +11,17 @@ datasource db {
 }
 
 model User {
-  id               Int       @id @default(autoincrement())
-  username         String    @unique
+  id               Int        @id @default(autoincrement())
+  username         String     @unique
   password         String
-  desctiption      String?
-  likesSent        Like[]    @relation("UserLikes")
-  likesReceived    Like[]    @relation("UserLikedBy")
-  messagesSent     Message[] @relation("sendsMessage")
-  messagesReceived Message[] @relation("receivesMessage")
+  description      String?
+  likesSent        Like[]     @relation("UserLikes")
+  likesReceived    Like[]     @relation("UserLikedBy")
+  messagesSent     Message[]  @relation("sendsMessage")
+  messagesReceived Message[]  @relation("receivesMessage")
   avatar           String?
   gallery          Gallery?
+  interests        Interest[]
 }
 
 model Like {
@@ -62,4 +63,20 @@ model Gallery {
   id     Int  @id @default(autoincrement())
   user   User @relation(fields: [userId], references: [id])
   userId Int  @unique
+  images String[]
+}
+
+model Interest {
+  id         Int                @id @default(autoincrement())
+  name       String             @unique
+  category   CategoryOfInterest @relation(fields: [categoryId], references: [id])
+  categoryId Int
+
+  User   User[]
+}
+
+model CategoryOfInterest {
+  id        Int        @id @default(autoincrement())
+  name      String     @unique
+  interests Interest[]
 }

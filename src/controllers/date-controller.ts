@@ -16,7 +16,7 @@ class DateController {
         avatar: true,
         gallery: true,
         username: true,
-        desctiption: true
+        description: true
       }
     });
 
@@ -34,7 +34,7 @@ class DateController {
         avatar: true,
         gallery: true,
         username: true,
-        desctiption: true,
+        description: true,
       }
     });
     return res.status(200).json({
@@ -124,7 +124,7 @@ class DateController {
       select: {
         username: true,
         id: true,
-        desctiption: true,
+        description: true,
         avatar: true,
         gallery: true,
       }
@@ -164,7 +164,7 @@ class DateController {
       select: {
         username: true,
         id: true,
-        desctiption: true,
+        description: true,
         avatar: true,
         gallery: true,
       }

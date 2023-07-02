@@ -1,5 +1,6 @@
 import { z } from "zod";
 import type { Request, Response } from "express";
+import jsonWebToken from "./jwt-helper.js";
 
 export const makeGetEndpoint = (cb: (req: Request, res: Response) => void, schema?: z.Schema) =>
   (req: Request, res: Response) => {
@@ -43,4 +44,5 @@ export const cookieValidation = (cb: (req: Request, res: Response) => void, sche
       }
     }
     cb(req, res)
-  }
+}
+
